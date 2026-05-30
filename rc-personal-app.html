@@ -220,17 +220,89 @@ select.fi{-webkit-appearance:none;}
         <div class="at">
           <div class="at2 active" onclick="swAT(this,'af')">📋 Ficha</div>
           <div class="at2" onclick="swAT(this,'afo')">📸 Fotos</div>
+          <div class="at2" onclick="swAT(this,'aad')">📏 Adipômetro</div>
           <div class="at2" onclick="swAT(this,'ah')">🕐 Histórico</div>
         </div>
         <div id="af"><div class="empty"><div class="ei">📋</div><p>Selecione um aluno.</p></div></div>
+
+        <!-- FOTOS COM UPLOAD REAL -->
         <div id="afo" style="display:none;">
-          <div class="fp" onclick="toast('Upload de fotos em breve!')">
-            <div style="font-size:32px;margin-bottom:8px;">📸</div>
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;color:var(--rb);">+ Adicionar Fotos</div>
-            <div style="font-size:12px;color:var(--gr);margin-top:4px;">Frente · Lateral · Costas</div>
+          <div class="stitle">Fotos Antes & Depois</div>
+          <div style="padding:0 16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
+            <div>
+              <div style="font-size:11px;color:var(--gr);text-transform:uppercase;letter-spacing:1px;text-align:center;margin-bottom:6px;">Frente</div>
+              <label style="display:block;cursor:pointer;">
+                <input type="file" accept="image/*" style="display:none;" id="inp-frente" onchange="uploadFoto(this,'frente')">
+                <div id="foto-frente" style="background:var(--dk2);border:1px dashed rgba(192,39,29,.4);border-radius:10px;height:110px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                  <span style="font-size:24px;">📸</span>
+                </div>
+              </label>
+            </div>
+            <div>
+              <div style="font-size:11px;color:var(--gr);text-transform:uppercase;letter-spacing:1px;text-align:center;margin-bottom:6px;">Lateral</div>
+              <label style="display:block;cursor:pointer;">
+                <input type="file" accept="image/*" style="display:none;" id="inp-lateral" onchange="uploadFoto(this,'lateral')">
+                <div id="foto-lateral" style="background:var(--dk2);border:1px dashed rgba(192,39,29,.4);border-radius:10px;height:110px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                  <span style="font-size:24px;">📸</span>
+                </div>
+              </label>
+            </div>
+            <div>
+              <div style="font-size:11px;color:var(--gr);text-transform:uppercase;letter-spacing:1px;text-align:center;margin-bottom:6px;">Costas</div>
+              <label style="display:block;cursor:pointer;">
+                <input type="file" accept="image/*" style="display:none;" id="inp-costas" onchange="uploadFoto(this,'costas')">
+                <div id="foto-costas" style="background:var(--dk2);border:1px dashed rgba(192,39,29,.4);border-radius:10px;height:110px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                  <span style="font-size:24px;">📸</span>
+                </div>
+              </label>
+            </div>
+          </div>
+          <div style="padding:0 16px 12px;">
+            <button class="bs" style="width:100%;padding:13px;" onclick="salvarFotos()">💾 Salvar Fotos</button>
           </div>
           <div id="fc2"></div>
         </div>
+
+        <!-- ADIPÔMETRO -->
+        <div id="aad" style="display:none;">
+          <div class="stitle">Cálculo de Gordura Corporal</div>
+          <div style="padding:0 16px 12px;">
+            <div class="fg"><label class="fl">Protocolo</label>
+              <select class="fi" id="adip-proto" onchange="renderAdipProto()">
+                <option value="pollock3">Pollock 3 Dobras</option>
+                <option value="pollock7">Pollock 7 Dobras</option>
+                <option value="faulkner">Faulkner 4 Dobras</option>
+                <option value="jackson">Jackson & Pollock</option>
+              </select>
+            </div>
+            <div class="fr">
+              <div class="fg"><label class="fl">Sexo</label>
+                <select class="fi" id="adip-sexo" onchange="calcAdip()">
+                  <option value="M">Masculino</option>
+                  <option value="F">Feminino</option>
+                </select>
+              </div>
+              <div class="fg"><label class="fl">Idade</label>
+                <input class="fi" id="adip-idade" type="number" placeholder="25" oninput="calcAdip()">
+              </div>
+            </div>
+            <div id="adip-campos"></div>
+            <div style="background:linear-gradient(135deg,var(--rd),#250000);border:1px solid rgba(192,39,29,.3);border-radius:12px;padding:16px;margin-top:4px;">
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;">Resultado</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;">
+                <div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;" id="res-dc">—</div><div style="font-size:10px;color:var(--gr);">Dens. Corp.</div></div>
+                <div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--rb);" id="res-gord">—%</div><div style="font-size:10px;color:var(--gr);">% Gordura</div></div>
+                <div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--ok);" id="res-class">—</div><div style="font-size:10px;color:var(--gr);">Classificação</div></div>
+              </div>
+              <div style="margin-top:10px;display:flex;justify-content:space-between;font-size:12px;color:var(--gr);">
+                <span>Massa Gorda: <span id="res-mg" style="color:var(--wh);font-weight:600;">—</span></span>
+                <span>Massa Magra: <span id="res-mm" style="color:var(--ok);font-weight:600;">—</span></span>
+              </div>
+            </div>
+            <button class="bs" style="width:100%;padding:13px;margin-top:12px;" onclick="salvarResultAdip()">💾 Salvar na Avaliação</button>
+          </div>
+        </div>
+
         <div id="ah" style="display:none;"><div class="lg" id="ahl"></div></div>
       </div>
       <!-- CHAT -->
@@ -303,20 +375,50 @@ select.fi{-webkit-appearance:none;}
 <div class="mo" id="mt">
   <div class="md">
     <div class="mh"></div><div class="mt">Novo Programa</div>
-    <div class="fg"><label class="fl">Nome do programa</label><input class="fi" id="tn" placeholder="Ex: Hipertrofia Nível A"></div>
-    <div class="fg"><label class="fl">Aluno</label><select class="fi" id="ta"><option value="">Selecionar aluno...</option></select></div>
-    <div class="fg"><label class="fl">Objetivo</label><select class="fi" id="to"><option value="Hipertrofia">Hipertrofia</option><option value="Emagrecimento">Emagrecimento</option><option value="Força">Força</option><option value="Funcional">Funcional</option><option value="Jiu-Jitsu">Jiu-Jitsu</option></select></div>
-    <div class="fg"><label class="fl">Dias de treino</label>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
-        <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;"><input type="checkbox" value="SEG" class="td"> SEG</label>
-        <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;"><input type="checkbox" value="TER" class="td"> TER</label>
-        <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;"><input type="checkbox" value="QUA" class="td"> QUA</label>
-        <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;"><input type="checkbox" value="QUI" class="td"> QUI</label>
-        <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;"><input type="checkbox" value="SEX" class="td"> SEX</label>
-        <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;"><input type="checkbox" value="SAB" class="td"> SAB</label>
+    <!-- TABS -->
+    <div style="display:flex;background:var(--dk3);border-radius:8px;padding:3px;margin-bottom:16px;">
+      <button style="flex:1;padding:8px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;transition:all .2s;" id="tt-manual" class="tt-active" onclick="swTT('manual')">✏️ Manual</button>
+      <button style="flex:1;padding:8px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;transition:all .2s;background:transparent;color:var(--gr);" id="tt-template" onclick="swTT('template')">⚡ Templates</button>
+    </div>
+    <!-- MANUAL -->
+    <div id="tt-form-manual">
+      <div class="fg"><label class="fl">Nome do programa</label><input class="fi" id="tn" placeholder="Ex: Hipertrofia Nível A"></div>
+      <div class="fg"><label class="fl">Aluno</label><select class="fi" id="ta"><option value="">Selecionar aluno...</option></select></div>
+      <div class="fg"><label class="fl">Objetivo</label><select class="fi" id="to"><option value="Hipertrofia">Hipertrofia</option><option value="Emagrecimento">Emagrecimento</option><option value="Força">Força</option><option value="Funcional">Funcional</option><option value="Jiu-Jitsu">Jiu-Jitsu</option></select></div>
+      <div class="fg"><label class="fl">Dias de treino</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;"><input type="checkbox" value="SEG" class="td"> SEG</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;"><input type="checkbox" value="TER" class="td"> TER</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;"><input type="checkbox" value="QUA" class="td"> QUA</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;"><input type="checkbox" value="QUI" class="td"> QUI</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;"><input type="checkbox" value="SEX" class="td"> SEX</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;"><input type="checkbox" value="SAB" class="td"> SAB</label>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Exercícios (um por linha: Nome | Séries)</label><textarea class="fi" id="tex" rows="5" placeholder="Supino Reto | 4x10&#10;Agachamento | 4x12&#10;Remada | 3x10"></textarea></div>
+    </div>
+    <!-- TEMPLATES -->
+    <div id="tt-form-template" style="display:none;">
+      <div class="fg"><label class="fl">Aluno</label><select class="fi" id="ta2"><option value="">Selecionar aluno...</option></select></div>
+      <div class="fg"><label class="fl">Escolher Template</label>
+        <select class="fi" id="tpl-sel" onchange="previewTemplate()">
+          <option value="">Selecionar template...</option>
+          <option value="hiper3">Hipertrofia ABC (3x/sem)</option>
+          <option value="hiper4">Hipertrofia ABCD (4x/sem)</option>
+          <option value="emag3">Emagrecimento (3x/sem)</option>
+          <option value="forca3">Força — Método 5x5 (3x/sem)</option>
+          <option value="func3">Funcional (3x/sem)</option>
+          <option value="jiu3">Preparação Jiu-Jitsu (3x/sem)</option>
+          <option value="init2">Iniciante (2x/sem)</option>
+        </select>
+      </div>
+      <div id="tpl-preview" style="display:none;margin-top:8px;">
+        <div style="background:var(--dk3);border-radius:10px;padding:12px;margin-bottom:8px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;color:var(--gold);text-transform:uppercase;margin-bottom:8px;">Preview do Template</div>
+          <div id="tpl-preview-content" style="font-size:12px;color:var(--grl);line-height:1.8;"></div>
+        </div>
       </div>
     </div>
-    <div class="fg"><label class="fl">Exercícios (um por linha: Nome | Séries)</label><textarea class="fi" id="tex" rows="5" placeholder="Supino Reto | 4x10&#10;Agachamento | 4x12&#10;Remada | 3x10"></textarea></div>
     <div class="mas"><button class="bc" onclick="closeMod('mt')">Cancelar</button><button class="bs" onclick="saveTreino()">Salvar</button></div>
   </div>
 </div>
@@ -390,28 +492,26 @@ select.fi{-webkit-appearance:none;}
 <script>
 // ── DATA ──
 const PE='ricardojjnu@icloud.com';
-const PH=h('Ri808285');
-function h(s){let r=0;for(let i=0;i<s.length;i++){r=((r<<5)-r)+s.charCodeAt(i);r|=0;}return r.toString();}
+const PP='Ri808285';
 const db={
   get(k){try{return JSON.parse(localStorage.getItem('rcp_'+k))||null}catch{return null}},
-  set(k,v){localStorage.setItem('rcp_'+k,JSON.stringify(v))},
+  set(k,v){try{localStorage.setItem('rcp_'+k,JSON.stringify(v))}catch(e){console.log('storage error');}},
   load(k,d){const v=this.get(k);return v!==null?v:d}
 };
 let alunos=db.load('al',[]),treinos=db.load('tr',[]),avals=db.load('av',[]),pags=db.load('pg',[]);
 function sv(){db.set('al',alunos);db.set('tr',treinos);db.set('av',avals);db.set('pg',pags);}
 let cu=null,lt='personal',eAl=null,avAl=null,doneEx=new Set();
 
-// ── AUTH ──
 function setLT(t,btn){lt=t;document.querySelectorAll('.ltab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
 function doLogin(){
   const e=document.getElementById('le').value.trim();
   const p=document.getElementById('lp').value;
   document.getElementById('lerr').style.display='none';
   if(lt==='personal'){
-    if(e===PE&&h(p)===PH){cu={type:'personal'};enterApp();}
+    if(e===PE&&p===PP){cu={type:'personal'};enterApp();}
     else{document.getElementById('lerr').style.display='block';}
   }else{
-    const a=alunos.find(x=>x.email===e&&h(p)===h(x.senha));
+    const a=alunos.find(x=>x.email===e&&p===x.senha);
     if(a){cu={type:'aluno',id:a.id};enterApp();}
     else{document.getElementById('lerr').style.display='block';}
   }
@@ -514,8 +614,9 @@ function saveTreino(){
 // ── AVALIAÇÕES ──
 function swAT(btn,id){
   document.querySelectorAll('.at2').forEach(t=>t.classList.remove('active'));btn.classList.add('active');
-  ['af','afo','ah'].forEach(x=>{document.getElementById(x).style.display=x===id?'block':'none';});
+  ['af','afo','aad','ah'].forEach(x=>{document.getElementById(x).style.display=x===id?'block':'none';});
   if(id==='ah')rAvalHist();
+  if(id==='aad')renderAdipProto();
 }
 function rAvalFicha(aid){
   const avs=avals.filter(a=>a.al===aid).sort((a,b)=>new Date(b.dt)-new Date(a.dt));
@@ -660,7 +761,11 @@ function openMod(id){
     const sel=document.getElementById(sid);
     if(sel)sel.innerHTML='<option value="">Selecionar aluno...</option>'+alunos.map(a=>`<option value="${a.id}">${a.nm}</option>`).join('');
   };
-  if(id==='mt')popSel('ta');
+  if(id==='mt'){
+    const opts='<option value="">Selecionar aluno...</option>'+alunos.map(a=>`<option value="${a.id}">${a.nm}</option>`).join('');
+    ['ta','ta2'].forEach(sid=>{const s=document.getElementById(sid);if(s)s.innerHTML=opts;});
+    _useTemplate=false;swTT('manual');
+  }
   if(id==='mav'){popSel('aval-al');document.getElementById('avd').value=new Date().toISOString().slice(0,10);}
   if(id==='mp'){popSel('pal');document.getElementById('pd').value=new Date().toISOString().slice(0,10);}
   if(id==='msa'){
@@ -684,6 +789,185 @@ function ini(n){return n.split(' ').slice(0,2).map(x=>x[0]).join('').toUpperCase
 function fDate(d){if(!d)return'—';const dt=new Date(d+'T12:00:00');return dt.toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});}
 function pb(p){return p==='Individual'?'br':p==='Protocolo RC'?'bg':'bk';}
 function toast(msg){const t=document.getElementById('tk');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-</script>
+
+// ── ADIPÔMETRO ──
+const ADIP_PROTOS={
+  pollock3:{nome:'Pollock 3 Dobras',campos:{M:['Peitoral','Abdominal','Coxa'],F:['Tríceps','Supra-ilíaca','Coxa']},
+    calc:(d,s,i)=>{const sm=d.reduce((a,b)=>a+b,0);return s==='M'?1.10938-(0.0008267*sm)+(0.0000016*sm*sm)-(0.0002574*i):1.099492-(0.0009929*sm)+(0.0000023*sm*sm)-(0.0001392*i);}},
+  pollock7:{nome:'Pollock 7 Dobras',campos:{M:['Peitoral','Axilar Média','Tríceps','Subescapular','Abdominal','Supra-ilíaca','Coxa'],F:['Peitoral','Axilar Média','Tríceps','Subescapular','Abdominal','Supra-ilíaca','Coxa']},
+    calc:(d,s,i)=>{const sm=d.reduce((a,b)=>a+b,0);return s==='M'?1.112-(0.00043499*sm)+(0.00000055*sm*sm)-(0.00028826*i):1.097-(0.00046971*sm)+(0.00000056*sm*sm)-(0.00012828*i);}},
+  faulkner:{nome:'Faulkner 4 Dobras',campos:{M:['Subescapular','Tríceps','Supra-ilíaca','Abdominal'],F:['Subescapular','Tríceps','Supra-ilíaca','Abdominal']},
+    calc:(d,s,i)=>{return {direct:(d.reduce((a,b)=>a+b,0)*0.153)+5.783};}},
+  jackson:{nome:'Jackson & Pollock',campos:{M:['Peitoral','Abdominal','Coxa'],F:['Tríceps','Supra-ilíaca','Coxa']},
+    calc:(d,s,i)=>{const sm=d.reduce((a,b)=>a+b,0);return s==='M'?1.10938-(0.0008267*sm)+(0.0000016*sm*sm)-(0.0002574*i):1.0994921-(0.0009929*sm)+(0.0000023*sm*sm)-(0.0001392*i);}}
+};
+
+function renderAdipProto(){
+  const proto=document.getElementById('adip-proto').value;
+  const sexo=document.getElementById('adip-sexo').value;
+  if(!proto)return;
+  const p=ADIP_PROTOS[proto];
+  const campos=p.campos[sexo];
+  document.getElementById('adip-campos').innerHTML=`
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;color:var(--gold);text-transform:uppercase;margin:10px 0 8px;">${p.nome} — Dobras (mm)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${campos.map(c=>`<div class="fg"><label class="fl">${c}</label><input class="fi adip-val" type="number" step="0.1" placeholder="0.0" oninput="calcAdip()"></div>`).join('')}</div>
+    <div class="fg" style="margin-top:4px;"><label class="fl">Peso corporal (kg)</label><input class="fi" id="adip-peso" type="number" step="0.1" placeholder="0.0" oninput="calcAdip()"></div>`;
+}
+
+function calcAdip(){
+  const proto=document.getElementById('adip-proto').value;
+  const sexo=document.getElementById('adip-sexo').value;
+  const idade=Number(document.getElementById('adip-idade').value)||0;
+  const pesoel=document.getElementById('adip-peso');
+  const peso=pesoel?Number(pesoel.value)||0:0;
+  const vals=[...document.querySelectorAll('.adip-val')].map(i=>Number(i.value)||0);
+  if(vals.some(v=>v===0)||!idade)return;
+  const p=ADIP_PROTOS[proto];
+  const result=p.calc(vals,sexo,idade);
+  let pctGord;
+  if(typeof result==='object'&&result.direct)pctGord=result.direct;
+  else pctGord=((4.95/result)-4.50)*100;
+  pctGord=Math.max(0,Math.min(50,pctGord));
+  const mg=peso>0?(peso*pctGord/100).toFixed(1):'—';
+  const mm=peso>0?(peso-peso*pctGord/100).toFixed(1):'—';
+  document.getElementById('res-dc').textContent=typeof result==='number'?result.toFixed(4):'—';
+  document.getElementById('res-gord').textContent=pctGord.toFixed(1)+'%';
+  document.getElementById('res-mg').textContent=mg!=='—'?mg+'kg':'—';
+  document.getElementById('res-mm').textContent=mm!=='—'?mm+'kg':'—';
+  const cls=clsGord(pctGord,sexo);
+  document.getElementById('res-class').textContent=cls.l;
+  document.getElementById('res-class').style.color=cls.c;
+}
+
+function clsGord(p,s){
+  if(s==='M'){if(p<6)return{l:'Essencial',c:'var(--warn)'};if(p<14)return{l:'Atleta',c:'var(--ok)'};if(p<18)return{l:'Boa forma',c:'var(--ok)'};if(p<25)return{l:'Aceitável',c:'var(--gold)'};return{l:'Obeso',c:'var(--rb)'};}
+  else{if(p<14)return{l:'Essencial',c:'var(--warn)'};if(p<21)return{l:'Atleta',c:'var(--ok)'};if(p<25)return{l:'Boa forma',c:'var(--ok)'};if(p<32)return{l:'Aceitável',c:'var(--gold)'};return{l:'Obeso',c:'var(--rb)'};}
+}
+
+function salvarResultAdip(){
+  const pct=document.getElementById('res-gord').textContent;
+  if(pct==='—%'){toast('Preencha os dados primeiro.');return;}
+  if(!avAl){toast('Selecione um aluno.');return;}
+  const avs=avals.filter(a=>a.al===avAl).sort((a,b)=>new Date(b.dt)-new Date(a.dt));
+  if(avs.length>0){avs[0].gord=parseFloat(pct);sv();toast('Gordura salva! ✅');}
+  else toast('Crie uma avaliação primeiro.');
+}
+
+// ── UPLOAD FOTOS ──
+let fotosTemp={frente:null,lateral:null,costas:null};
+function uploadFoto(input,tipo){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    fotosTemp[tipo]=e.target.result;
+    const el=document.getElementById('foto-'+tipo);
+    el.innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+  };
+  reader.readAsDataURL(file);
+}
+function salvarFotos(){
+  if(!avAl){toast('Selecione um aluno.');return;}
+  if(!fotosTemp.frente&&!fotosTemp.lateral&&!fotosTemp.costas){toast('Adicione ao menos uma foto.');return;}
+  const fotos=db.load('fotos_'+avAl,{});
+  const data=new Date().toISOString().slice(0,10);
+  if(!fotos[data])fotos[data]={};
+  if(fotosTemp.frente)fotos[data].frente=fotosTemp.frente;
+  if(fotosTemp.lateral)fotos[data].lateral=fotosTemp.lateral;
+  if(fotosTemp.costas)fotos[data].costas=fotosTemp.costas;
+  try{db.set('fotos_'+avAl,fotos);toast('Fotos salvas! ✅');}
+  catch(e){toast('Foto muito grande. Tente outra.');}
+  fotosTemp={frente:null,lateral:null,costas:null};
+  rFotosCompare(avAl);
+}
+function rFotosCompare(aid){
+  const fotos=db.load('fotos_'+aid,{});
+  const avs=avals.filter(a=>a.al===aid).sort((a,b)=>new Date(a.dt)-new Date(b.dt));
+  const el=document.getElementById('fc2');
+  const datas=Object.keys(fotos).sort();
+  let html='';
+  if(datas.length>=2){
+    const fd=datas[0],ld=datas[datas.length-1];
+    const ff=fotos[fd],lf=fotos[ld];
+    html+=`<div class="stitle">Comparativo</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 12px;">
+      <div style="background:var(--dk2);border:1px solid rgba(255,255,255,.06);border-radius:10px;overflow:hidden;text-align:center;">
+        <div style="background:rgba(192,39,29,.15);padding:6px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--rb);text-transform:uppercase;">ANTES</div>
+        <div style="height:130px;overflow:hidden;">${ff.frente?`<img src="${ff.frente}" style="width:100%;height:100%;object-fit:cover;">`:'<div style="height:100%;display:flex;align-items:center;justify-content:center;font-size:36px;opacity:.3;">🧍</div>'}</div>
+        <div style="padding:8px;background:var(--dk3);font-size:11px;color:var(--gr);">${fDate(fd)}</div>
+      </div>
+      <div style="background:var(--dk2);border:1px solid rgba(46,204,113,.25);border-radius:10px;overflow:hidden;text-align:center;">
+        <div style="background:rgba(46,204,113,.15);padding:6px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ok);text-transform:uppercase;">DEPOIS</div>
+        <div style="height:130px;overflow:hidden;">${lf.frente?`<img src="${lf.frente}" style="width:100%;height:100%;object-fit:cover;">`:'<div style="height:100%;display:flex;align-items:center;justify-content:center;font-size:36px;opacity:.5;">🧍</div>'}</div>
+        <div style="padding:8px;background:var(--dk3);font-size:11px;color:var(--gr);">${fDate(ld)}</div>
+      </div></div>`;
+  }
+  if(avs.length>=2){
+    const f=avs[0],l=avs[avs.length-1];
+    const dp=l.peso&&f.peso?(l.peso-f.peso).toFixed(1):null;
+    const dg=l.gord&&f.gord?(l.gord-f.gord).toFixed(1):null;
+    if(dp!==null)html+=`<div style="margin:0 16px 16px;" class="card cp"><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;">Resultados</div><div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);"><span style="font-size:13px;color:var(--grl);">⚖️ Variação peso</span><span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:${dp<0?'var(--ok)':'var(--rb)'};">${dp>0?'+':''}${dp} kg</span></div>${dg!==null?`<div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="font-size:13px;color:var(--grl);">🔥 Variação gordura</span><span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:${dg<0?'var(--ok)':'var(--rb)'};">${dg>0?'+':''}${dg}%</span></div>`:''}</div>`;
+  }
+  el.innerHTML=html||'<div class="empty"><p>Adicione fotos em datas diferentes para ver o comparativo.</p></div>';
+}
+
+// ── TEMPLATES DE TREINO ──
+const TEMPLATES={
+  hiper3:{nm:'Hipertrofia ABC',obj:'Hipertrofia',ds:['SEG','QUA','SEX'],ex:[{nm:'Supino Reto',sr:'4x10-12'},{nm:'Supino Inclinado',sr:'3x12'},{nm:'Crucifixo',sr:'3x15'},{nm:'Tríceps Pulley',sr:'4x12'},{nm:'Tríceps Francês',sr:'3x12'},{nm:'Agachamento',sr:'4x10'},{nm:'Leg Press',sr:'4x12'},{nm:'Remada Curvada',sr:'4x10'},{nm:'Puxada Frontal',sr:'4x12'},{nm:'Rosca Direta',sr:'3x12'}]},
+  hiper4:{nm:'Hipertrofia ABCD',obj:'Hipertrofia',ds:['SEG','TER','QUI','SEX'],ex:[{nm:'Supino Reto',sr:'4x10'},{nm:'Supino Inclinado Halteres',sr:'4x12'},{nm:'Crossover',sr:'3x15'},{nm:'Desenvolvimento',sr:'4x10'},{nm:'Elevação Lateral',sr:'4x15'},{nm:'Agachamento Livre',sr:'4x10'},{nm:'Leg Press 45°',sr:'4x12'},{nm:'Stiff',sr:'4x12'},{nm:'Remada Serrote',sr:'4x10'},{nm:'Puxada Aberta',sr:'4x12'},{nm:'Rosca Direta',sr:'4x12'},{nm:'Tríceps Pulley',sr:'4x12'}]},
+  emag3:{nm:'Emagrecimento Funcional',obj:'Emagrecimento',ds:['SEG','QUA','SEX'],ex:[{nm:'Esteira HIIT',sr:'20 min'},{nm:'Agachamento Livre',sr:'4x15'},{nm:'Afundo',sr:'3x12 cada'},{nm:'Flexão de Braço',sr:'3x15'},{nm:'Remada TRX',sr:'3x15'},{nm:'Prancha',sr:'3x45s'},{nm:'Burpee',sr:'3x10'},{nm:'Mountain Climber',sr:'3x30s'}]},
+  forca3:{nm:'Força 5x5',obj:'Força',ds:['SEG','QUA','SEX'],ex:[{nm:'Agachamento Livre',sr:'5x5'},{nm:'Supino Reto',sr:'5x5'},{nm:'Levantamento Terra',sr:'5x5'},{nm:'Desenvolvimento Militar',sr:'5x5'},{nm:'Remada Curvada',sr:'5x5'}]},
+  func3:{nm:'Funcional Completo',obj:'Funcional',ds:['SEG','QUA','SEX'],ex:[{nm:'Aquecimento Cardio',sr:'10 min'},{nm:'Agachamento Goblet',sr:'4x15'},{nm:'Kettlebell Swing',sr:'4x15'},{nm:'TRX Remada',sr:'3x15'},{nm:'Flexão Dinâmica',sr:'3x12'},{nm:'Prancha Dinâmica',sr:'3x45s'},{nm:'Box Jump',sr:'3x10'},{nm:'Core Rotacional',sr:'3x15'}]},
+  jiu3:{nm:'Preparação Jiu-Jitsu',obj:'Jiu-Jitsu',ds:['SEG','QUA','SEX'],ex:[{nm:'Aquecimento Específico',sr:'15 min'},{nm:'Agachamento Búlgaro',sr:'4x10 cada'},{nm:'Levantamento Terra',sr:'4x8'},{nm:'Remada Curvada',sr:'4x10'},{nm:'Puxada Pronada',sr:'4x10'},{nm:'Prancha Lateral',sr:'3x45s'},{nm:'Turkish Get-Up',sr:'3x5 cada'},{nm:'Farmer Walk',sr:'3x30m'},{nm:'Cardio HIIT',sr:'15 min'}]},
+  init2:{nm:'Iniciante Completo',obj:'Saúde',ds:['TER','QUI'],ex:[{nm:'Esteira Leve',sr:'10 min'},{nm:'Agachamento Corporal',sr:'3x15'},{nm:'Flexão Apoiada',sr:'3x10'},{nm:'Remada Máquina',sr:'3x12'},{nm:'Desenvolvimento Halteres',sr:'3x12'},{nm:'Prancha',sr:'3x30s'},{nm:'Alongamento',sr:'10 min'}]}
+};
+
+function swTT(tipo){
+  const isM=tipo==='manual';
+  document.getElementById('tt-form-manual').style.display=isM?'block':'none';
+  document.getElementById('tt-form-template').style.display=isM?'none':'block';
+  document.getElementById('tt-manual').style.cssText=isM?'background:linear-gradient(135deg,var(--rb),var(--rd));color:var(--wh);':'background:transparent;color:var(--gr);';
+  document.getElementById('tt-template').style.cssText=!isM?'background:linear-gradient(135deg,var(--rb),var(--rd));color:var(--wh);':'background:transparent;color:var(--gr);';
+}
+
+function previewTemplate(){
+  const key=document.getElementById('tpl-sel').value;
+  const el=document.getElementById('tpl-preview');
+  if(!key){el.style.display='none';return;}
+  const t=TEMPLATES[key];
+  el.style.display='block';
+  document.getElementById('tpl-preview-content').innerHTML=`<strong style="color:var(--wh);">${t.nm}</strong><br>Dias: ${t.ds.join(', ')}<br>Exercícios: ${t.ex.length}<br><br>`+t.ex.map(e=>`• ${e.nm} — ${e.sr}`).join('<br>');
+}
+
+let _useTemplate=false;
+function swTT(tipo){
+  _useTemplate=tipo==='template';
+  const isM=!_useTemplate;
+  document.getElementById('tt-form-manual').style.display=isM?'block':'none';
+  document.getElementById('tt-form-template').style.display=isM?'none':'block';
+  const mBtn=document.getElementById('tt-manual'),tBtn=document.getElementById('tt-template');
+  mBtn.style.background=isM?'linear-gradient(135deg,var(--rb),var(--rd))':'transparent';
+  mBtn.style.color=isM?'var(--wh)':'var(--gr)';
+  tBtn.style.background=!isM?'linear-gradient(135deg,var(--rb),var(--rd))':'transparent';
+  tBtn.style.color=!isM?'var(--wh)':'var(--gr)';
+}
+
+const _saveTreinoBase=saveTreino;
+saveTreino=function(){
+  if(!_useTemplate){_saveTreinoBase();return;}
+  const key=document.getElementById('tpl-sel').value;
+  const alunoId=document.getElementById('ta2').value;
+  if(!key){toast('Selecione um template.');return;}
+  if(!alunoId){toast('Selecione um aluno.');return;}
+  const t=TEMPLATES[key];
+  treinos.push({id:Date.now().toString(),nm:t.nm,al:alunoId,obj:t.obj,ds:t.ds,ex:t.ex});
+  sv();closeMod('mt');rTreinos();toast('Template "'+t.nm+'" aplicado! ✅');
+  _useTemplate=false;
+};
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded',()=>{
+  renderAdipProto();
+  const today=new Date().toISOString().slice(0,10);
+  ['av-data','pag-data'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=today;});
+});
 </body>
 </html>
