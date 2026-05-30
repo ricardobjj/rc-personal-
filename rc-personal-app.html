@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>RC Personal</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--red:#C0271D;--rb:#E03020;--rd:#7A0000;--gold:#C9A84C;--gl:#E8C060;--blk:#080808;--dk:#100808;--dk2:#180C0C;--dk3:#201010;--wh:#F5EEEE;--gr:#997777;--grl:#CCB8B8;--ok:#2ECC71;--warn:#F39C12;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--blk);color:var(--wh);font-family:'Barlow',sans-serif;}
+.screen{display:none;height:100vh;flex-direction:column;overflow:hidden;}
+.screen.active{display:flex;}
+/* LOGIN */
+#sl{background:linear-gradient(160deg,#1A0505 0%,var(--blk) 60%);align-items:center;justify-content:center;padding:32px;}
+.ll{font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:4px;background:linear-gradient(135deg,#FF4040,var(--rd));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;line-height:1;}
+.ls{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:6px;color:var(--gr);text-transform:uppercase;text-align:center;margin-bottom:40px;}
+.lb{width:100%;max-width:340px;}
+.ltabs{display:flex;background:var(--dk2);border-radius:10px;padding:3px;margin-bottom:20px;}
+.ltab{flex:1;padding:9px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr);border-radius:8px;cursor:pointer;transition:all .2s;border:none;background:transparent;}
+.ltab.active{background:linear-gradient(135deg,var(--rb),var(--rd));color:var(--wh);}
+.ig{margin-bottom:14px;}
+.il{font-size:11px;color:var(--gr);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:block;}
+.inf{width:100%;background:var(--dk2);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:13px 16px;color:var(--wh);font-family:'Barlow',sans-serif;font-size:14px;outline:none;transition:border-color .2s;}
+.inf:focus{border-color:rgba(192,39,29,.5);}
+.inf::placeholder{color:var(--gr);}
+.bp{width:100%;background:linear-gradient(135deg,var(--rb),var(--rd));border:none;border-radius:10px;padding:15px;color:var(--wh);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:6px;}
+.lerr{background:rgba(192,39,29,.15);border:1px solid rgba(192,39,29,.4);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--rb);margin-bottom:12px;display:none;text-align:center;}
+/* APP */
+#sa{background:var(--dk);}
+.topbar{background:var(--dk2);padding:44px 16px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(192,39,29,.2);flex-shrink:0;}
+.tlogo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;background:linear-gradient(135deg,#FF4040,var(--rd));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.tright{display:flex;gap:10px;align-items:center;}
+.tav{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--rd));display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;border:2px solid var(--gold);}
+.tout{font-size:11px;color:var(--gr);cursor:pointer;padding:4px 8px;border:1px solid rgba(255,255,255,.1);border-radius:6px;}
+.vtoggle{display:flex;margin:10px 16px;background:var(--dk2);border-radius:8px;padding:3px;border:1px solid rgba(255,255,255,.05);flex-shrink:0;}
+.vbtn{flex:1;padding:8px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;text-align:center;border-radius:6px;cursor:pointer;transition:all .2s;color:var(--gr);border:none;background:transparent;}
+.vbtn.active{background:linear-gradient(135deg,var(--rb),var(--rd));color:var(--wh);}
+.content{flex:1;overflow-y:auto;padding-bottom:72px;scrollbar-width:none;}
+.content::-webkit-scrollbar{display:none;}
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--dk2);border-top:1px solid rgba(192,39,29,.2);display:flex;padding:8px 0 20px;z-index:100;}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;}
+.nic{font-size:18px;}
+.nil{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr);}
+.ni.active .nil{color:var(--rb);}
+/* SECTIONS */
+.sec{display:none;padding-bottom:16px;animation:fu .3s ease both;}
+.sec.active{display:block;}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* COMPONENTS */
+.stitle{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);padding:14px 16px 8px;display:flex;justify-content:space-between;align-items:center;}
+.stitle button{font-size:11px;color:var(--rb);background:none;border:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px;}
+.card{background:var(--dk2);border:1px solid rgba(255,255,255,.05);border-radius:12px;}
+.cp{padding:14px;}
+.lbl{font-size:11px;color:var(--gr);text-transform:uppercase;letter-spacing:1px;}
+.bdg{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;padding:3px 8px;border-radius:4px;text-transform:uppercase;}
+.br{background:rgba(192,39,29,.2);color:var(--rb);border:1px solid rgba(192,39,29,.3);}
+.bg{background:rgba(201,168,76,.15);color:var(--gold);border:1px solid rgba(201,168,76,.25);}
+.bk{background:rgba(46,204,113,.15);color:var(--ok);border:1px solid rgba(46,204,113,.25);}
+.bw{background:rgba(243,156,18,.15);color:var(--warn);border:1px solid rgba(243,156,18,.25);}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:4px 16px 12px;}
+.sc{background:var(--dk2);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:14px 10px;text-align:center;position:relative;overflow:hidden;}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),var(--gold));}
+.sv{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;line-height:1;}
+.sl2{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr);margin-top:2px;}
+.st{font-size:10px;color:var(--ok);margin-top:2px;}
+.lg{padding:0 16px;display:flex;flex-direction:column;gap:10px;}
+.sbar{margin:6px 16px 12px;background:var(--dk2);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;color:var(--gr);font-size:13px;}
+.chips{display:flex;gap:6px;padding:0 16px 12px;overflow-x:auto;scrollbar-width:none;}
+.chip{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:5px 14px;border-radius:20px;white-space:nowrap;cursor:pointer;border:1px solid rgba(255,255,255,.1);color:var(--gr);background:transparent;transition:all .2s;}
+.chip.active{background:var(--red);border-color:var(--red);color:var(--wh);}
+.empty{text-align:center;padding:40px 20px;color:var(--gr);}
+.empty .ei{font-size:40px;margin-bottom:12px;}
+.empty p{font-size:13px;line-height:1.6;}
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:flex-end;justify-content:center;}
+.mo.active{display:flex;}
+.md{background:var(--dk2);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 20px 40px;max-height:85vh;overflow-y:auto;scrollbar-width:none;animation:su .3s ease both;}
+.md::-webkit-scrollbar{display:none;}
+@keyframes su{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mh{width:40px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 16px;}
+.mt{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--wh);margin-bottom:16px;}
+.fg{margin-bottom:14px;}
+.fl{font-size:11px;color:var(--gr);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:block;}
+.fi{width:100%;background:var(--dk3);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 14px;color:var(--wh);font-family:'Barlow',sans-serif;font-size:14px;outline:none;transition:border-color .2s;}
+.fi:focus{border-color:rgba(192,39,29,.5);}
+select.fi{-webkit-appearance:none;}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mas{display:flex;gap:10px;margin-top:20px;}
+.bc{flex:1;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:13px;color:var(--gr);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;}
+.bs{flex:2;background:linear-gradient(135deg,var(--rb),var(--rd));border:none;border-radius:10px;padding:13px;color:var(--wh);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;}
+/* DASH */
+.dh{padding:14px 16px 4px;}
+.dg{font-size:12px;color:var(--gr);letter-spacing:1px;text-transform:uppercase;}
+.dn{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;line-height:1;}
+.dn span{color:var(--rb);}
+.rc{margin:4px 16px 4px;background:linear-gradient(135deg,var(--rd),#250000);border:1px solid rgba(192,39,29,.3);border-radius:12px;padding:16px;display:flex;justify-content:space-between;align-items:center;}
+/* ALUNOS */
+.ai{background:var(--dk2);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+.aav{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--dk3),var(--dk2));border:2px solid rgba(192,39,29,.3);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--rb);flex-shrink:0;}
+/* FIN */
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:4px 16px 12px;}
+.fc{background:var(--dk2);border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,.05);position:relative;overflow:hidden;}
+.fc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.fc.g::before{background:var(--ok)}.fc.r::before{background:var(--rb)}.fc.w::before{background:var(--warn)}.fc.d::before{background:var(--gold)}
+.fv{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1;margin-top:6px;}
+/* CHART */
+.cw{margin:0 16px 12px;background:var(--dk2);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:14px;}
+.cb{display:flex;align-items:flex-end;gap:8px;height:80px;margin-top:10px;}
+.bcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.br2{width:100%;background:linear-gradient(180deg,var(--rb),var(--rd));border-radius:3px 3px 0 0;min-height:4px;}
+.bl{font-size:10px;color:var(--gr);font-family:'Barlow Condensed',sans-serif;font-weight:700;}
+.bv{font-size:11px;color:var(--wh);font-family:'Barlow Condensed',sans-serif;font-weight:700;}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;}
+.mc{background:var(--dk2);border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:12px;}
+/* AVAL */
+.at{display:flex;gap:6px;padding:0 16px 12px;}
+.at2{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:6px 14px;border-radius:20px;cursor:pointer;border:1px solid rgba(255,255,255,.1);color:var(--gr);background:transparent;white-space:nowrap;}
+.at2.active{background:var(--red);border-color:var(--red);color:var(--wh);}
+.fp{margin:0 16px 12px;background:rgba(255,255,255,.03);border:1px dashed rgba(192,39,29,.4);border-radius:12px;padding:24px;text-align:center;cursor:pointer;}
+.cmpg{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 12px;}
+.cmc{background:var(--dk2);border-radius:10px;overflow:hidden;text-align:center;}
+/* CHAT */
+.chi{background:var(--dk2);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+/* ALUNO VIEW */
+.pw{background:rgba(255,255,255,.1);border-radius:4px;height:6px;margin-top:6px;}
+.pb{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--rb),var(--gold));}
+.exi{background:var(--dk2);border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+.exn{width:28px;height:28px;border-radius:50%;background:rgba(192,39,29,.15);border:1px solid rgba(192,39,29,.3);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--rb);flex-shrink:0;}
+.exi.done .exn{background:rgba(46,204,113,.15);border-color:rgba(46,204,113,.3);color:var(--ok);}
+.exi.done{opacity:.6;}
+/* TOAST */
+.toast{position:fixed;top:100px;left:50%;transform:translateX(-50%);background:var(--dk2);border:1px solid rgba(192,39,29,.4);border-radius:10px;padding:10px 20px;font-size:13px;font-weight:600;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="sl" class="screen active">
+  <div class="ll">RC Personal</div>
+  <div class="ls">Personal Trainer</div>
+  <div class="lb">
+    <div class="ltabs">
+      <button class="ltab active" onclick="setLT('personal',this)">👨‍💼 Personal</button>
+      <button class="ltab" onclick="setLT('aluno',this)">🏋️ Aluno</button>
+    </div>
+    <div id="lerr" class="lerr">Email ou senha incorretos.</div>
+    <div class="ig"><label class="il">Email</label><input class="inf" id="le" type="email" placeholder="seu@email.com"></div>
+    <div class="ig"><label class="il">Senha</label><input class="inf" id="lp" type="password" placeholder="••••••••"></div>
+    <button class="bp" onclick="doLogin()">Entrar</button>
+    <div style="text-align:center;margin-top:16px;font-size:12px;color:var(--gr);">Ricardo Cabeça Personal Trainer</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="sa" class="screen">
+  <div class="topbar">
+    <div class="tlogo">RC Personal</div>
+    <div class="tright">
+      <span class="tout" onclick="doLogout()">Sair</span>
+      <div class="tav" id="tav">RC</div>
+    </div>
+  </div>
+  <div class="vtoggle" id="vt">
+    <button class="vbtn active" onclick="swV('p',this)">👨‍💼 Personal</button>
+    <button class="vbtn" onclick="swV('a',this)">🏋️ Aluno</button>
+  </div>
+  <div class="content" id="mc">
+
+    <!-- PERSONAL VIEW -->
+    <div id="pv">
+      <!-- DASH -->
+      <div class="sec active" id="s-dash">
+        <div class="dh"><div class="dg">Bom dia,</div><div class="dn">Ricardo <span>Cabeça</span></div></div>
+        <div class="sgrid" id="ds"></div>
+        <div class="rc">
+          <div><div class="lbl">Receita do mês</div><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;" id="dr">R$ 0</div></div>
+          <div style="text-align:right;"><div style="font-size:28px;">💰</div><div style="font-size:11px;color:var(--ok);" id="dad">0%</div></div>
+        </div>
+        <div class="stitle">Agenda</div>
+        <div class="lg" id="dag"></div>
+        <div class="stitle" style="margin-top:8px;">Alertas</div>
+        <div class="lg" id="dal" style="padding-bottom:8px;"></div>
+      </div>
+      <!-- ALUNOS -->
+      <div class="sec" id="s-alunos">
+        <div class="stitle">Meus Alunos <button onclick="openMod('ma')">+ Novo</button></div>
+        <div class="sbar">🔍 <input style="background:none;border:none;outline:none;color:var(--wh);font-size:13px;width:100%;" placeholder="Buscar aluno..." oninput="filA(this.value)"></div>
+        <div class="lg" id="al"></div>
+      </div>
+      <!-- TREINOS -->
+      <div class="sec" id="s-treinos">
+        <div class="stitle">Programas <button onclick="openMod('mt')">+ Novo</button></div>
+        <div class="lg" id="tl"></div>
+      </div>
+      <!-- EVOLUÇÃO -->
+      <div class="sec" id="s-evolucao">
+        <div class="stitle">Evolução</div>
+        <div class="card cp" style="margin:0 16px 12px;cursor:pointer;" onclick="openMod('msa')">
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span id="ean" style="font-weight:600;">Selecionar aluno</span><span style="color:var(--rb);font-size:12px;">Trocar ▼</span></div>
+        </div>
+        <div id="ec"><div class="empty"><div class="ei">📊</div><p>Selecione um aluno.</p></div></div>
+      </div>
+      <!-- FINANCEIRO -->
+      <div class="sec" id="s-financeiro">
+        <div class="stitle">Financeiro <button onclick="openMod('mp')">+ Registrar</button></div>
+        <div class="fg2" id="fs"></div>
+        <div class="stitle">Pagamentos</div>
+        <div class="lg" id="pl"></div>
+      </div>
+      <!-- AVALIAÇÃO -->
+      <div class="sec" id="s-avaliacoes">
+        <div class="stitle">Avaliações <button onclick="openMod('mav')">+ Nova</button></div>
+        <div class="card cp" style="margin:0 16px 12px;cursor:pointer;" onclick="openMod('msav')">
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span id="aan" style="font-weight:600;">Selecionar aluno</span><span style="color:var(--rb);font-size:12px;">Trocar ▼</span></div>
+        </div>
+        <div class="at">
+          <div class="at2 active" onclick="swAT(this,'af')">📋 Ficha</div>
+          <div class="at2" onclick="swAT(this,'afo')">📸 Fotos</div>
+          <div class="at2" onclick="swAT(this,'ah')">🕐 Histórico</div>
+        </div>
+        <div id="af"><div class="empty"><div class="ei">📋</div><p>Selecione um aluno.</p></div></div>
+        <div id="afo" style="display:none;">
+          <div class="fp" onclick="toast('Upload de fotos em breve!')">
+            <div style="font-size:32px;margin-bottom:8px;">📸</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;color:var(--rb);">+ Adicionar Fotos</div>
+            <div style="font-size:12px;color:var(--gr);margin-top:4px;">Frente · Lateral · Costas</div>
+          </div>
+          <div id="fc2"></div>
+        </div>
+        <div id="ah" style="display:none;"><div class="lg" id="ahl"></div></div>
+      </div>
+      <!-- CHAT -->
+      <div class="sec" id="s-chat">
+        <div class="stitle">Mensagens</div>
+        <div class="sbar">🔍 <span>Buscar...</span></div>
+        <div class="lg" id="cl"></div>
+      </div>
+    </div><!-- /pv -->
+
+    <!-- ALUNO VIEW -->
+    <div id="av" style="display:none;">
+      <div class="dh"><div class="dg">Olá,</div><div class="dn" id="avn">Aluno</div></div>
+      <div class="sgrid" id="avs"></div>
+      <div style="margin:4px 16px 12px;background:linear-gradient(135deg,var(--rd),#250000);border:1px solid rgba(192,39,29,.3);border-radius:16px;padding:16px;">
+        <div class="lbl" style="margin-bottom:4px;">Treino de Hoje</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;" id="att">Sem treino</div>
+        <div style="font-size:13px;color:rgba(245,238,238,.6);margin-top:4px;" id="ats"></div>
+        <div style="margin-top:14px;">
+          <div style="font-size:12px;color:rgba(245,238,238,.5);" id="atp">—</div>
+          <div class="pw"><div class="pb" id="apb" style="width:0%"></div></div>
+        </div>
+      </div>
+      <div class="stitle">Exercícios</div>
+      <div class="lg" id="axl"></div>
+      <div style="padding:16px;" id="abw"></div>
+    </div>
+
+  </div><!-- /mc -->
+
+  <!-- BOTTOM NAV -->
+  <div class="bnav" id="bn">
+    <div class="ni active" onclick="goS('dash',this)"><div class="nic">🏠</div><div class="nil">Início</div></div>
+    <div class="ni" onclick="goS('alunos',this)"><div class="nic">👥</div><div class="nil">Alunos</div></div>
+    <div class="ni" onclick="goS('treinos',this)"><div class="nic">💪</div><div class="nil">Treinos</div></div>
+    <div class="ni" onclick="goS('evolucao',this)"><div class="nic">📈</div><div class="nil">Evolução</div></div>
+    <div class="ni" onclick="goS('financeiro',this)"><div class="nic">💰</div><div class="nil">Financeiro</div></div>
+    <div class="ni" onclick="goS('avaliacoes',this)"><div class="nic">📋</div><div class="nil">Avaliação</div></div>
+    <div class="ni" onclick="goS('chat',this)"><div class="nic">💬</div><div class="nil">Chat</div></div>
+  </div>
+</div>
+
+<!-- MODAL ALUNO -->
+<div class="mo" id="ma">
+  <div class="md">
+    <div class="mh"></div><div class="mt">Novo Aluno</div>
+    <div class="fg"><label class="fl">Nome completo</label><input class="fi" id="fn" placeholder="Nome do aluno"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Email</label><input class="fi" id="fe" type="email" placeholder="email@email.com"></div>
+      <div class="fg"><label class="fl">Senha (app)</label><input class="fi" id="fs2" type="password" placeholder="••••••"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Plano</label><select class="fi" id="fp2"><option value="Individual">Individual</option><option value="Dupla">Dupla</option><option value="Protocolo RC">Protocolo RC</option></select></div>
+      <div class="fg"><label class="fl">Duração</label><select class="fi" id="fd"><option value="Mensal">Mensal</option><option value="Semestral">Semestral</option><option value="Anual">Anual</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Freq/sem</label><select class="fi" id="ff"><option value="2x">2x</option><option value="3x">3x</option><option value="4x" selected>4x</option><option value="5x">5x</option></select></div>
+      <div class="fg"><label class="fl">Objetivo</label><select class="fi" id="fo"><option value="Hipertrofia">Hipertrofia</option><option value="Emagrecimento">Emagrecimento</option><option value="Força">Força</option><option value="Funcional">Funcional</option><option value="Saúde">Saúde</option><option value="Jiu-Jitsu">Jiu-Jitsu</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Valor (R$)</label><input class="fi" id="fv" type="number" placeholder="0"></div>
+      <div class="fg"><label class="fl">Vencimento (dia)</label><input class="fi" id="fvc" type="number" placeholder="5" min="1" max="28"></div>
+    </div>
+    <div class="fg"><label class="fl">Horário padrão</label><input class="fi" id="fh" placeholder="Ex: Seg 07:00 / Qua 07:00"></div>
+    <div class="mas"><button class="bc" onclick="closeMod('ma')">Cancelar</button><button class="bs" onclick="saveAluno()">Salvar Aluno</button></div>
+  </div>
+</div>
+
+<!-- MODAL TREINO -->
+<div class="mo" id="mt">
+  <div class="md">
+    <div class="mh"></div><div class="mt">Novo Programa</div>
+    <div class="fg"><label class="fl">Nome do programa</label><input class="fi" id="tn" placeholder="Ex: Hipertrofia Nível A"></div>
+    <div class="fg"><label class="fl">Aluno</label><select class="fi" id="ta"><option value="">Selecionar aluno...</option></select></div>
+    <div class="fg"><label class="fl">Objetivo</label><select class="fi" id="to"><option value="Hipertrofia">Hipertrofia</option><option value="Emagrecimento">Emagrecimento</option><option value="Força">Força</option><option value="Funcional">Funcional</option><option value="Jiu-Jitsu">Jiu-Jitsu</option></select></div>
+    <div class="fg"><label class="fl">Dias de treino</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;"><input type="checkbox" value="SEG" class="td"> SEG</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;"><input type="checkbox" value="TER" class="td"> TER</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;"><input type="checkbox" value="QUA" class="td"> QUA</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;"><input type="checkbox" value="QUI" class="td"> QUI</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;"><input type="checkbox" value="SEX" class="td"> SEX</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;"><input type="checkbox" value="SAB" class="td"> SAB</label>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">Exercícios (um por linha: Nome | Séries)</label><textarea class="fi" id="tex" rows="5" placeholder="Supino Reto | 4x10&#10;Agachamento | 4x12&#10;Remada | 3x10"></textarea></div>
+    <div class="mas"><button class="bc" onclick="closeMod('mt')">Cancelar</button><button class="bs" onclick="saveTreino()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- MODAL AVALIAÇÃO -->
+<div class="mo" id="mav">
+  <div class="md">
+    <div class="mh"></div><div class="mt">Nova Avaliação</div>
+    <div class="fg"><label class="fl">Aluno</label><select class="fi" id="aval-al"><option value="">Selecionar...</option></select></div>
+    <div class="fg"><label class="fl">Data</label><input class="fi" id="avd" type="date"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Peso (kg)</label><input class="fi" id="avp" type="number" step="0.1" placeholder="0.0"></div>
+      <div class="fg"><label class="fl">Altura (cm)</label><input class="fi" id="avh" type="number" placeholder="0"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">% Gordura</label><input class="fi" id="avg" type="number" step="0.1" placeholder="0.0"></div>
+      <div class="fg"><label class="fl">Massa Magra kg</label><input class="fi" id="avm" type="number" step="0.1" placeholder="0.0"></div>
+    </div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin:10px 0 8px;">Circunferências</div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Cintura (cm)</label><input class="fi" id="avc" type="number" placeholder="0"></div>
+      <div class="fg"><label class="fl">Quadril (cm)</label><input class="fi" id="avq" type="number" placeholder="0"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Tórax (cm)</label><input class="fi" id="avt" type="number" placeholder="0"></div>
+      <div class="fg"><label class="fl">Bíceps D (cm)</label><input class="fi" id="avb" type="number" placeholder="0"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Coxa D (cm)</label><input class="fi" id="avco" type="number" placeholder="0"></div>
+      <div class="fg"><label class="fl">Panturrilha (cm)</label><input class="fi" id="avpa" type="number" placeholder="0"></div>
+    </div>
+    <div class="fg"><label class="fl">Observações</label><textarea class="fi" id="avo" rows="3" placeholder="Observações..."></textarea></div>
+    <div class="mas"><button class="bc" onclick="closeMod('mav')">Cancelar</button><button class="bs" onclick="saveAval()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- MODAL PAGAMENTO -->
+<div class="mo" id="mp">
+  <div class="md">
+    <div class="mh"></div><div class="mt">Registrar Pagamento</div>
+    <div class="fg"><label class="fl">Aluno</label><select class="fi" id="pal"><option value="">Selecionar...</option></select></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Valor (R$)</label><input class="fi" id="pv2" type="number" placeholder="0"></div>
+      <div class="fg"><label class="fl">Data</label><input class="fi" id="pd" type="date"></div>
+    </div>
+    <div class="fg"><label class="fl">Status</label><select class="fi" id="ps"><option value="pago">Pago ✅</option><option value="pendente">Pendente ⏳</option><option value="atrasado">Atrasado 🔴</option></select></div>
+    <div class="mas"><button class="bc" onclick="closeMod('mp')">Cancelar</button><button class="bs" onclick="savePag()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- MODAL SEL ALUNO EVOLUÇÃO -->
+<div class="mo" id="msa">
+  <div class="md">
+    <div class="mh"></div><div class="mt">Selecionar Aluno</div>
+    <div class="lg" id="sal" style="max-height:55vh;overflow-y:auto;"></div>
+    <div class="mas"><button class="bc" onclick="closeMod('msa')">Fechar</button></div>
+  </div>
+</div>
+
+<!-- MODAL SEL ALUNO AVAL -->
+<div class="mo" id="msav">
+  <div class="md">
+    <div class="mh"></div><div class="mt">Selecionar Aluno</div>
+    <div class="lg" id="saval" style="max-height:55vh;overflow-y:auto;"></div>
+    <div class="mas"><button class="bc" onclick="closeMod('msav')">Fechar</button></div>
+  </div>
+</div>
+
+<div class="toast" id="tk"></div>
+
+<script>
+// ── DATA ──
+const PE='ricardojjnu@icloud.com';
+const PH=h('Ri808285');
+function h(s){let r=0;for(let i=0;i<s.length;i++){r=((r<<5)-r)+s.charCodeAt(i);r|=0;}return r.toString();}
+const db={
+  get(k){try{return JSON.parse(localStorage.getItem('rcp_'+k))||null}catch{return null}},
+  set(k,v){localStorage.setItem('rcp_'+k,JSON.stringify(v))},
+  load(k,d){const v=this.get(k);return v!==null?v:d}
+};
+let alunos=db.load('al',[]),treinos=db.load('tr',[]),avals=db.load('av',[]),pags=db.load('pg',[]);
+function sv(){db.set('al',alunos);db.set('tr',treinos);db.set('av',avals);db.set('pg',pags);}
+let cu=null,lt='personal',eAl=null,avAl=null,doneEx=new Set();
+
+// ── AUTH ──
+function setLT(t,btn){lt=t;document.querySelectorAll('.ltab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function doLogin(){
+  const e=document.getElementById('le').value.trim();
+  const p=document.getElementById('lp').value;
+  document.getElementById('lerr').style.display='none';
+  if(lt==='personal'){
+    if(e===PE&&h(p)===PH){cu={type:'personal'};enterApp();}
+    else{document.getElementById('lerr').style.display='block';}
+  }else{
+    const a=alunos.find(x=>x.email===e&&h(p)===h(x.senha));
+    if(a){cu={type:'aluno',id:a.id};enterApp();}
+    else{document.getElementById('lerr').style.display='block';}
+  }
+}
+function doLogout(){cu=null;showScr('sl');document.getElementById('le').value='';document.getElementById('lp').value='';}
+function enterApp(){
+  showScr('sa');
+  if(cu.type==='personal'){
+    document.getElementById('vt').style.display='flex';
+    document.getElementById('bn').style.display='flex';
+    swV('p');renderDash();
+  }else{
+    document.getElementById('vt').style.display='none';
+    document.getElementById('bn').style.display='none';
+    swV('a');renderAV();
+  }
+}
+function showScr(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+// ── NAV ──
+function swV(v,btn){
+  if(btn){document.querySelectorAll('.vbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+  if(v==='p'){document.getElementById('pv').style.display='block';document.getElementById('av').style.display='none';document.getElementById('bn').style.display='flex';renderDash();}
+  else{document.getElementById('pv').style.display='none';document.getElementById('av').style.display='block';document.getElementById('bn').style.display='none';renderAV();}
+}
+function goS(n,el){
+  document.querySelectorAll('#pv .sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(i=>i.classList.remove('active'));
+  document.getElementById('s-'+n).classList.add('active');
+  if(el)el.classList.add('active');
+  if(n==='alunos')rAlunos();
+  if(n==='treinos')rTreinos();
+  if(n==='financeiro')rFin();
+  if(n==='chat')rChat();
+  if(n==='dash')renderDash();
+}
+
+// ── DASHBOARD ──
+function renderDash(){
+  const totR=pags.filter(p=>p.st==='pago'&&isMes(p.dt)).reduce((s,p)=>s+Number(p.vl),0);
+  const totA=pags.length>0?Math.round(pags.filter(p=>p.st==='pago').length/pags.length*100):0;
+  document.getElementById('dr').textContent='R$ '+totR.toLocaleString('pt-BR');
+  document.getElementById('dad').textContent=totA+'% adimplência';
+  document.getElementById('ds').innerHTML=`
+    <div class="sc"><div class="sv">${alunos.length}</div><div class="sl2">Alunos</div></div>
+    <div class="sc"><div class="sv">${treinos.length}</div><div class="sl2">Programas</div></div>
+    <div class="sc"><div class="sv">${avals.length}</div><div class="sl2">Avaliações</div></div>`;
+  const ag=alunos.filter(a=>a.hr);
+  document.getElementById('dag').innerHTML=ag.length===0?'<div class="empty"><p>Cadastre horários nos alunos.</p></div>':
+    ag.slice(0,5).map(a=>`<div class="ai"><div class="aav">${ini(a.nm)}</div><div style="flex:1;"><div style="font-weight:600;font-size:14px;">${a.nm}</div><div style="font-size:12px;color:var(--gr);margin-top:2px;">${a.hr} · ${a.obj}</div></div><span class="bdg ${pb(a.pl)}">${a.pl}</span></div>`).join('');
+  const atr=pags.filter(p=>p.st==='atrasado');
+  document.getElementById('dal').innerHTML=atr.length>0?
+    `<div style="background:rgba(192,39,29,.1);border:1px solid rgba(192,39,29,.2);border-radius:10px;padding:12px 14px;display:flex;gap:10px;align-items:center;"><span style="font-size:18px;">💳</span><div><div style="font-size:13px;font-weight:600;color:var(--rb);">${atr.length} pagamento(s) em atraso</div><div style="font-size:11px;color:var(--gr);">Total: R$ ${atr.reduce((s,p)=>s+Number(p.vl),0).toLocaleString('pt-BR')}</div></div></div>`:
+    '<div style="padding:0 0 4px;font-size:13px;color:var(--gr);">Sem alertas. ✅</div>';
+}
+function isMes(d){if(!d)return false;const dt=new Date(d),n=new Date();return dt.getMonth()===n.getMonth()&&dt.getFullYear()===n.getFullYear();}
+
+// ── ALUNOS ──
+function rAlunos(f=''){
+  const l=alunos.filter(a=>!f||a.nm.toLowerCase().includes(f.toLowerCase()));
+  document.getElementById('al').innerHTML=l.length===0?'<div class="empty"><div class="ei">👥</div><p>Nenhum aluno.<br>Toque "+ Novo" para adicionar.</p></div>':
+    l.map(a=>`<div class="ai"><div class="aav">${ini(a.nm)}</div><div style="flex:1;"><div style="font-weight:600;font-size:14px;">${a.nm}</div><div style="font-size:11px;color:var(--gr);margin-top:2px;">${a.pl} · ${a.dur} · ${a.fr}/sem</div></div><div style="text-align:right;"><span class="bdg bk">Ativo</span><div style="font-size:11px;color:var(--gr);margin-top:4px;">${a.obj}</div></div></div>`).join('');
+}
+function filA(v){rAlunos(v);}
+function saveAluno(){
+  const nm=document.getElementById('fn').value.trim();
+  if(!nm){toast('Informe o nome.');return;}
+  alunos.push({id:Date.now().toString(),nm,email:document.getElementById('fe').value.trim(),senha:document.getElementById('fs2').value,pl:document.getElementById('fp2').value,dur:document.getElementById('fd').value,fr:document.getElementById('ff').value,obj:document.getElementById('fo').value,vl:document.getElementById('fv').value,vc:document.getElementById('fvc').value,hr:document.getElementById('fh').value});
+  sv();closeMod('ma');rAlunos();renderDash();toast('Aluno '+nm+' cadastrado!');
+  ['fn','fe','fs2','fv','fvc','fh'].forEach(id=>document.getElementById(id).value='');
+}
+
+// ── TREINOS ──
+function rTreinos(){
+  document.getElementById('tl').innerHTML=treinos.length===0?'<div class="empty"><div class="ei">💪</div><p>Nenhum programa.<br>Toque "+ Novo".</p></div>':
+    treinos.map(t=>{
+      const a=alunos.find(x=>x.id===t.al);
+      const ds=['SEG','TER','QUA','QUI','SEX','SAB','DOM'];
+      return`<div style="background:var(--dk2);border:1px solid rgba(255,255,255,.05);border-radius:12px;overflow:hidden;">
+        <div style="padding:14px;display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid rgba(255,255,255,.04);">
+          <div><div style="font-weight:700;font-size:15px;">${t.nm}</div><div style="font-size:12px;color:var(--gr);margin-top:2px;">${a?a.nm:'—'} · ${t.obj}</div></div>
+          <span class="bdg br">${t.obj}</span>
+        </div>
+        <div style="display:flex;gap:4px;padding:10px 14px;flex-wrap:wrap;">${ds.map(d=>`<span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;padding:4px 8px;border-radius:4px;${t.ds.includes(d)?'background:rgba(192,39,29,.15);color:var(--rb);border:1px solid rgba(192,39,29,.2);':'background:rgba(255,255,255,.04);color:var(--gr);'}">${d}</span>`).join('')}</div>
+        ${t.ex.slice(0,3).map(e=>`<div style="display:flex;justify-content:space-between;padding:7px 14px;border-top:1px solid rgba(255,255,255,.03);font-size:13px;"><span>${e.nm}</span><span style="color:var(--gr)">${e.sr}</span></div>`).join('')}
+        ${t.ex.length>3?`<div style="padding:7px 14px;font-size:12px;color:var(--gr);">+ ${t.ex.length-3} exercícios</div>`:''}
+      </div>`;
+    }).join('');
+}
+function saveTreino(){
+  const nm=document.getElementById('tn').value.trim();
+  if(!nm){toast('Informe o nome.');return;}
+  const ds=[...document.querySelectorAll('.td:checked')].map(c=>c.value);
+  const ex=document.getElementById('tex').value.trim().split('\n').filter(Boolean).map(l=>{const p=l.split('|');return{nm:(p[0]||'').trim(),sr:(p[1]||'').trim()};});
+  treinos.push({id:Date.now().toString(),nm,al:document.getElementById('ta').value,obj:document.getElementById('to').value,ds,ex});
+  sv();closeMod('mt');rTreinos();toast('Programa salvo!');
+  document.getElementById('tn').value='';document.getElementById('tex').value='';
+}
+
+// ── AVALIAÇÕES ──
+function swAT(btn,id){
+  document.querySelectorAll('.at2').forEach(t=>t.classList.remove('active'));btn.classList.add('active');
+  ['af','afo','ah'].forEach(x=>{document.getElementById(x).style.display=x===id?'block':'none';});
+  if(id==='ah')rAvalHist();
+}
+function rAvalFicha(aid){
+  const avs=avals.filter(a=>a.al===aid).sort((a,b)=>new Date(b.dt)-new Date(a.dt));
+  const el=document.getElementById('af');
+  if(avs.length===0){el.innerHTML='<div class="empty"><div class="ei">📋</div><p>Nenhuma avaliação.<br>Toque "+ Nova".</p></div>';return;}
+  const av=avs[0];
+  const imc=av.peso&&av.alt?(av.peso/Math.pow(av.alt/100,2)).toFixed(1):'—';
+  el.innerHTML=`
+    <div style="margin:0 16px 12px;background:linear-gradient(135deg,var(--rd),#250000);border:1px solid rgba(192,39,29,.3);border-radius:12px;padding:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div><div class="lbl">Última avaliação</div><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--wh);line-height:1;">${fDate(av.dt)}</div></div>
+        <div class="bdg bk">Registrada ✓</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
+        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;">${av.peso||'—'}<span style="font-size:11px;color:var(--gr)">kg</span></div><div class="lbl">Peso</div></div>
+        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;">${av.gord||'—'}<span style="font-size:11px;color:var(--gr)">%</span></div><div class="lbl">Gordura</div></div>
+        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;">${av.mag||'—'}<span style="font-size:11px;color:var(--gr)">kg</span></div><div class="lbl">M.Magra</div></div>
+      </div>
+    </div>
+    <div class="stitle">Medidas</div>
+    <div class="mg">
+      ${[['Peso',av.peso,'kg'],['Altura',av.alt,'cm'],['IMC',imc,''],['% Gordura',av.gord,'%'],['Cintura',av.cin,'cm'],['Quadril',av.quad,'cm'],['Tórax',av.tor,'cm'],['Bíceps',av.bic,'cm']].map(([l,v,u])=>`<div class="mc"><div class="lbl">${l}</div><div style="font-family:'Bebas Neue',sans-serif;font-size:24px;">${v||'—'}<span style="font-size:12px;color:var(--gr)"> ${u}</span></div></div>`).join('')}
+    </div>
+    ${av.obs?`<div class="stitle">Observações</div><div style="margin:0 16px 16px;" class="card cp"><div style="font-size:13px;color:var(--grl);line-height:1.6;">${av.obs}</div></div>`:''}`;
+}
+function rAvalHist(){
+  if(!avAl){document.getElementById('ahl').innerHTML='<div class="empty"><p>Selecione um aluno.</p></div>';return;}
+  const avs=avals.filter(a=>a.al===avAl).sort((a,b)=>new Date(b.dt)-new Date(a.dt));
+  document.getElementById('ahl').innerHTML=avs.length===0?'<div class="empty"><p>Nenhuma avaliação.</p></div>':
+    avs.map((av,i)=>`<div class="card cp" style="display:flex;align-items:center;gap:12px;cursor:pointer;"><div style="width:42px;height:42px;border-radius:50%;background:rgba(192,39,29,.15);border:1px solid rgba(192,39,29,.3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📋</div><div style="flex:1;"><div style="font-weight:600;font-size:14px;">Avaliação #${avs.length-i}</div><div style="font-size:12px;color:var(--gr);margin-top:2px;">${fDate(av.dt)} · ${av.peso||'—'}kg · ${av.gord||'—'}%</div></div><div style="font-size:12px;color:var(--rb);">Ver →</div></div>`).join('');
+}
+function rFotosCompare(aid){
+  const avs=avals.filter(a=>a.al===aid).sort((a,b)=>new Date(a.dt)-new Date(b.dt));
+  const el=document.getElementById('fc2');
+  if(avs.length<2){el.innerHTML='';return;}
+  const f=avs[0],l=avs[avs.length-1];
+  const dp=l.peso&&f.peso?(l.peso-f.peso).toFixed(1):null;
+  const dg=l.gord&&f.gord?(l.gord-f.gord).toFixed(1):null;
+  el.innerHTML=`<div class="stitle">Comparativo</div>
+    <div class="cmpg">
+      <div class="cmc" style="border:1px solid rgba(255,255,255,.06);"><div style="background:rgba(192,39,29,.15);padding:6px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--rb);text-transform:uppercase;">ANTES</div><div style="height:120px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;"><div style="font-size:40px;opacity:.3;">🧍</div><div style="font-size:10px;color:var(--gr);">${fDate(f.dt)}</div></div><div style="padding:8px;background:var(--dk3);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;">${f.peso||'—'}kg · ${f.gord||'—'}%</div></div>
+      <div class="cmc" style="border:1px solid rgba(46,204,113,.25);"><div style="background:rgba(46,204,113,.15);padding:6px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ok);text-transform:uppercase;">DEPOIS</div><div style="height:120px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;"><div style="font-size:40px;opacity:.5;">🧍</div><div style="font-size:10px;color:var(--gr);">${fDate(l.dt)}</div></div><div style="padding:8px;background:var(--dk3);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--ok);">${l.peso||'—'}kg · ${l.gord||'—'}%</div></div>
+    </div>
+    ${dp!==null?`<div style="margin:0 16px 16px;" class="card cp">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;">Resultados</div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);"><span style="font-size:13px;color:var(--grl);">⚖️ Variação de peso</span><span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:${dp<0?'var(--ok)':'var(--rb)'};">${dp>0?'+':''}${dp} kg</span></div>
+      ${dg!==null?`<div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="font-size:13px;color:var(--grl);">🔥 Variação gordura</span><span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:${dg<0?'var(--ok)':'var(--rb)'};">${dg>0?'+':''}${dg}%</span></div>`:''}
+    </div>`:''}`;
+}
+function saveAval(){
+  const al=document.getElementById('aval-al').value;
+  if(!al){toast('Selecione um aluno.');return;}
+  avals.push({id:Date.now().toString(),al,dt:document.getElementById('avd').value,peso:document.getElementById('avp').value,alt:document.getElementById('avh').value,gord:document.getElementById('avg').value,mag:document.getElementById('avm').value,cin:document.getElementById('avc').value,quad:document.getElementById('avq').value,tor:document.getElementById('avt').value,bic:document.getElementById('avb').value,cxa:document.getElementById('avco').value,pan:document.getElementById('avpa').value,obs:document.getElementById('avo').value});
+  sv();closeMod('mav');
+  if(avAl===al){rAvalFicha(al);rFotosCompare(al);rAvalHist();rEvo(al);}
+  toast('Avaliação salva!');
+}
+
+// ── EVOLUÇÃO ──
+function rEvo(aid){
+  const avs=avals.filter(a=>a.al===aid).sort((a,b)=>new Date(a.dt)-new Date(b.dt));
+  const el=document.getElementById('ec');
+  if(avs.length===0){el.innerHTML='<div class="empty"><div class="ei">📊</div><p>Nenhuma avaliação para este aluno.</p></div>';return;}
+  const last=avs[avs.length-1],first=avs[0];
+  const maxP=Math.max(...avs.map(a=>Number(a.peso)||0));
+  const bars=avs.slice(-6).map(a=>{const ht=maxP>0?Math.round((Number(a.peso)||0)/maxP*75):4;return`<div class="bcol"><div class="bv">${a.peso||'—'}</div><div class="br2" style="height:${ht}px;"></div><div class="bl">${a.dt?a.dt.slice(5,7)+'/'+a.dt.slice(2,4):''}</div></div>`;}).join('');
+  el.innerHTML=`<div class="cw"><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold);">Peso Corporal (kg)</div><div class="cb">${bars}</div></div>
+    <div class="stitle">Última Medição</div>
+    <div class="mg">
+      <div class="mc"><div class="lbl">Peso</div><div style="font-family:'Bebas Neue',sans-serif;font-size:26px;">${last.peso||'—'}<span style="font-size:12px;color:var(--gr)"> kg</span></div>${first.peso&&last.peso?`<div style="font-size:11px;color:${last.peso<first.peso?'var(--ok)':'var(--rb)'};">${last.peso<first.peso?'↓':'↑'} ${Math.abs(last.peso-first.peso).toFixed(1)}kg</div>`:''}</div>
+      <div class="mc"><div class="lbl">% Gordura</div><div style="font-family:'Bebas Neue',sans-serif;font-size:26px;">${last.gord||'—'}<span style="font-size:12px;color:var(--gr)"> %</span></div>${first.gord&&last.gord?`<div style="font-size:11px;color:${last.gord<first.gord?'var(--ok)':'var(--rb)'};">${last.gord<first.gord?'↓':'↑'} ${Math.abs(last.gord-first.gord).toFixed(1)}%</div>`:''}</div>
+      <div class="mc"><div class="lbl">Massa Magra</div><div style="font-family:'Bebas Neue',sans-serif;font-size:26px;">${last.mag||'—'}<span style="font-size:12px;color:var(--gr)"> kg</span></div></div>
+      <div class="mc"><div class="lbl">Cintura</div><div style="font-family:'Bebas Neue',sans-serif;font-size:26px;">${last.cin||'—'}<span style="font-size:12px;color:var(--gr)"> cm</span></div></div>
+    </div>`;
+}
+
+// ── FINANCEIRO ──
+function rFin(){
+  const pg=pags.filter(p=>p.st==='pago'&&isMes(p.dt)).reduce((s,p)=>s+Number(p.vl),0);
+  const pn=pags.filter(p=>p.st==='pendente').reduce((s,p)=>s+Number(p.vl),0);
+  const at=pags.filter(p=>p.st==='atrasado').reduce((s,p)=>s+Number(p.vl),0);
+  const mt=alunos.reduce((s,a)=>s+Number(a.vl||0),0);
+  document.getElementById('fs').innerHTML=`
+    <div class="fc g"><div class="lbl">Receita Mês</div><div class="fv" style="color:var(--ok);">R$${pg.toLocaleString('pt-BR')}</div></div>
+    <div class="fc w"><div class="lbl">Pendente</div><div class="fv" style="color:var(--warn);">R$${pn.toLocaleString('pt-BR')}</div></div>
+    <div class="fc r"><div class="lbl">Atrasado</div><div class="fv" style="color:var(--rb);">R$${at.toLocaleString('pt-BR')}</div></div>
+    <div class="fc d"><div class="lbl">Meta Mês</div><div class="fv" style="color:var(--gold);">R$${mt.toLocaleString('pt-BR')}</div></div>`;
+  const all=[...pags].sort((a,b)=>new Date(b.dt)-new Date(a.dt));
+  document.getElementById('pl').innerHTML=all.length===0?'<div class="empty"><p>Nenhum pagamento registrado.</p></div>':
+    all.map(p=>{const a=alunos.find(x=>x.id===p.al);const ic=p.st==='pago'?'✅':p.st==='pendente'?'⏳':'🔴';const cl=p.st==='pago'?'var(--ok)':p.st==='pendente'?'var(--warn)':'var(--rb)';
+    return`<div style="background:var(--dk2);border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;"><div style="font-size:20px;">${ic}</div><div style="flex:1;"><div style="font-weight:600;font-size:14px;">${a?a.nm:'—'}</div><div style="font-size:11px;color:var(--gr);margin-top:2px;">${fDate(p.dt)}</div></div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:${cl};">R$${Number(p.vl).toLocaleString('pt-BR')}</div></div>`;}).join('');
+}
+function savePag(){
+  const al=document.getElementById('pal').value;
+  if(!al){toast('Selecione o aluno.');return;}
+  pags.push({id:Date.now().toString(),al,vl:document.getElementById('pv2').value,dt:document.getElementById('pd').value,st:document.getElementById('ps').value});
+  sv();closeMod('mp');rFin();renderDash();toast('Pagamento registrado!');
+}
+
+// ── CHAT ──
+function rChat(){
+  document.getElementById('cl').innerHTML=alunos.length===0?'<div class="empty"><div class="ei">💬</div><p>Nenhum aluno cadastrado.</p></div>':
+    alunos.map(a=>`<div class="chi"><div style="width:42px;height:42px;border-radius:50%;background:var(--dk3);border:2px solid rgba(192,39,29,.3);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;color:var(--rb);flex-shrink:0;">${ini(a.nm)}</div><div style="flex:1;min-width:0;"><div style="font-weight:600;font-size:14px;">${a.nm}</div><div style="font-size:12px;color:var(--gr);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.obj} · ${a.pl}</div></div><div style="font-size:11px;color:var(--gr);text-align:right;">em breve</div></div>`).join('');
+}
+
+// ── ALUNO VIEW ──
+function renderAV(){
+  const a=alunos.find(x=>x.id===cu.id);
+  if(!a){document.getElementById('avn').innerHTML='Aluno';return;}
+  const nms=a.nm.split(' ');
+  document.getElementById('avn').innerHTML=nms[0]+' <span style="color:var(--rb)">'+nms.slice(1).join(' ')+'</span>';
+  const av=avals.filter(x=>x.al===a.id).sort((a,b)=>new Date(b.dt)-new Date(a.dt))[0];
+  document.getElementById('avs').innerHTML=`
+    <div class="sc"><div class="sv">${a.fr}</div><div class="sl2">Freq/sem</div></div>
+    <div class="sc"><div class="sv">${av?av.peso||'—':'—'}</div><div class="sl2">Peso kg</div></div>
+    <div class="sc"><div class="sv">${a.obj.slice(0,5)}</div><div class="sl2">Objetivo</div></div>`;
+  doneEx=new Set();
+  const t=treinos.find(x=>x.al===a.id);
+  if(t){
+    document.getElementById('att').textContent=t.nm;
+    document.getElementById('ats').textContent=t.obj+' · '+t.ex.length+' exercícios';
+    document.getElementById('atp').textContent='Progresso: 0 de '+t.ex.length;
+    document.getElementById('axl').innerHTML=t.ex.map((e,i)=>`<div class="exi" id="ex${i}" onclick="togEx(${i},${t.ex.length})"><div class="exn" id="en${i}">${i+1}</div><div style="flex:1;"><div style="font-weight:600;font-size:14px;">${e.nm}</div><div style="font-size:12px;color:var(--gr);margin-top:1px;">${e.sr}</div></div><div id="ec${i}">⭕</div></div>`).join('');
+    document.getElementById('abw').innerHTML=`<div style="background:linear-gradient(135deg,var(--rb),var(--rd));border-radius:12px;padding:16px;text-align:center;cursor:pointer;" onclick="toast('Treino finalizado! 💪')"><div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;">Finalizar Treino</div><div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:2px;">Registrar sessão</div></div>`;
+  }else{
+    document.getElementById('att').textContent='Sem programa';
+    document.getElementById('ats').textContent='Aguarde seu personal.';
+    document.getElementById('axl').innerHTML='<div class="empty"><p>Nenhum treino cadastrado.</p></div>';
+  }
+}
+function togEx(i,tot){
+  const it=document.getElementById('ex'+i),en=document.getElementById('en'+i),ec=document.getElementById('ec'+i);
+  if(doneEx.has(i)){doneEx.delete(i);it.classList.remove('done');en.textContent=i+1;ec.textContent='⭕';}
+  else{doneEx.add(i);it.classList.add('done');en.textContent='✓';ec.textContent='✅';}
+  document.getElementById('atp').textContent='Progresso: '+doneEx.size+' de '+tot;
+  document.getElementById('apb').style.width=Math.round(doneEx.size/tot*100)+'%';
+}
+
+// ── MODALS ──
+function openMod(id){
+  const popSel=(sid)=>{
+    const sel=document.getElementById(sid);
+    if(sel)sel.innerHTML='<option value="">Selecionar aluno...</option>'+alunos.map(a=>`<option value="${a.id}">${a.nm}</option>`).join('');
+  };
+  if(id==='mt')popSel('ta');
+  if(id==='mav'){popSel('aval-al');document.getElementById('avd').value=new Date().toISOString().slice(0,10);}
+  if(id==='mp'){popSel('pal');document.getElementById('pd').value=new Date().toISOString().slice(0,10);}
+  if(id==='msa'){
+    document.getElementById('sal').innerHTML=alunos.length===0?'<div class="empty"><p>Nenhum aluno.</p></div>':
+      alunos.map(a=>`<div class="ai" onclick="selEvo('${a.id}','${a.nm}')"><div class="aav">${ini(a.nm)}</div><div style="flex:1;"><div style="font-weight:600;font-size:14px;">${a.nm}</div><div style="font-size:12px;color:var(--gr);">${a.obj}</div></div></div>`).join('');
+  }
+  if(id==='msav'){
+    document.getElementById('saval').innerHTML=alunos.length===0?'<div class="empty"><p>Nenhum aluno.</p></div>':
+      alunos.map(a=>`<div class="ai" onclick="selAval('${a.id}','${a.nm}')"><div class="aav">${ini(a.nm)}</div><div style="flex:1;"><div style="font-weight:600;font-size:14px;">${a.nm}</div><div style="font-size:12px;color:var(--gr);">${a.obj}</div></div></div>`).join('');
+  }
+  const mo=document.getElementById(id);
+  mo.classList.add('active');
+  mo.onclick=e=>{if(e.target===mo)closeMod(id);};
+}
+function closeMod(id){document.getElementById(id).classList.remove('active');}
+function selEvo(id,nm){eAl=id;document.getElementById('ean').textContent=nm;closeMod('msa');rEvo(id);}
+function selAval(id,nm){avAl=id;document.getElementById('aan').textContent=nm;closeMod('msav');rAvalFicha(id);rFotosCompare(id);rAvalHist();}
+
+// ── UTILS ──
+function ini(n){return n.split(' ').slice(0,2).map(x=>x[0]).join('').toUpperCase();}
+function fDate(d){if(!d)return'—';const dt=new Date(d+'T12:00:00');return dt.toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});}
+function pb(p){return p==='Individual'?'br':p==='Protocolo RC'?'bg':'bk';}
+function toast(msg){const t=document.getElementById('tk');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+</script>
+</body>
+</html>
